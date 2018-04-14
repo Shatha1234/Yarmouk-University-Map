@@ -581,17 +581,6 @@ var para = document.createElement("a");
 
         }
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-  
-window.User_ID = user.uid ;
-Start22();
-Start();
-    
-  } else {
-     window.location.assign('sign_in.html');
-  }
-});
 </script>
 
 
