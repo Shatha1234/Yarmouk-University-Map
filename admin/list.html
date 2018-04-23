@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" type="text/css" href="../node_modules\bootstrap\dist\css\bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="../node_modules\font-awesome\css\font-awesome.min.css">
+  <script src="../node_modules\jquery\dist\jquery.min.js"></script>
+  <script src="../node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+  <script src="../js\config_firebase.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+
+</head>
+<body style="background: #eaeaea;">
+ <!-- navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">YU Map</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+          <li ><a href="index.html"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Map</a></li>
+            <li ><a href="Add filter.html"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add filter</a></li>
+            <li class="active"><a href="list.html"><i class="fa fa-list" aria-hidden="true"></i> List Maps</a></li>
+              <li><a href="Maps_Proposal.html"><i class="fa fa-list" aria-hidden="true"></i> Maps_Proposal</a></li>
+            <li><a href="Account.html"><i class="fa fa-user" aria-hidden="true"></i> Account</a></li>
+            <li  onclick="Sign_out()" ><a href="#contact" > <span id="nameUser"></span>  <i class="fa fa-sign-out" aria-hidden="true"></i> Sign out</a></li>
+          </ul>
+        </div>
+      </div>
+  </div><!-- /navbar -->
+
+
+
+
+ <div class="container">
+
+<div class="row" style="padding-top: 60px">
+  <div>
+    <button id="idbtn" onclick="Start()" class="waves-effect modal-trigger waves-light btn ">Back</button>
+  </div>
+  <ul id="nlist">
+    
+  </ul>
+</div>
+
+
+ </div>
+
+
+
+
+
+<div id="modal2" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h5 id="textch2" >Edit </h5>
+   
+      
+      <form class="col s12">
+      <div class="row">
+        <div class="input-field col s12">
+          <input  id="Map_Name" type="text" class="validate">
+          <label for=" ">Map Name</label>
+        </div>
+    
+      </div>
+  
+
+           <div class="row">
+        <div class="input-field col s12">
+          <input id="Description_text" type="text" class="validate">
+          <label for=" ">Map Description</label>
+        </div>
+      </div>
+         <div class="row">
+        <div class="input-field col s12">
+    <select id="mySelect">
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </select>
+    <label>Fillter Select</label>
+  </div>  </div>
+
+
+       <div class="row">
+<div id="map" style="height: 300px; "></div>
+ <div class="form-group">
+    <label for=" " style=" margin: 9px 0px; ">Search</label>
+   <input   type="text" class="form-control controls" id="pac-input" placeholder="Search">
+
+  </div>
+
+       </div>
+   
+  
+
+
+    </form>
+  
+
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Close</a> 
+      <a id="" class="waves-effect waves-light btn" onclick="chlickIdit()"><i class="fa fa-edit left"></i>Edit</a>
+    </div>
+  </div>
+
+
+
+
+ <div id="modal1" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h5 id="textch" >Show Map</h5>
+       <div id="result">
+      
+          <div class="row">
+<div id="map2" style="height: 300px; "></div>
+ <div class="form-group">
+    <label for=" " style=" margin: 9px 0px; ">Search</label>
+   <input   type="text" class="form-control controls" id="pac-input" placeholder="Search">
+
+  </div>
+
+       </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Close</a> 
+  
+    </div>
+  </div>
+
+
+
+
+</body>
+
+<script type="text/javascript">
+
+  function Sign_out() {
+    firebase.auth().signOut().then(function() {
+  window.location.assign('sign_in.html');
+}, function(error) {
+  console.log(' An error happened.' , error);
+   alert (error);
+});
+  }
+  
+  
+var User_ID;
+function Start() {
+
+   
+    var scores;
+
+    var ref_v = firebase.database().ref("Maps/" );
+
+    ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
+
+    function getData(data){
+         scores = data.val();
+        var keys = Object.keys(scores);
+        console.log(keys);
+
+
+        var myNode = document.getElementById("nlist");
+        myNode.innerHTML = '';
+
+
+
+
+        for (var i = 0; i < keys.length; i++) {
+            var k =keys[i];
+
+            var Map_Name = scores[k].Map_Name;
+            var Description_text = scores[k].Description_text;
+               var Filter = scores[k].Filter;
+                var lat = scores[k].lat;
+                 var lng = scores[k].lng;
+       
+     
+        console.log(Map_Name);
+        console.log(Description_text);
+        console.log(k);
+        
+
+        var para = document.createElement("li");
+        var t22 = document.createTextNode(" ");
+        para.appendChild(t22); 
+        document.getElementById("nlist").appendChild(para);
+            
+            para.setAttribute('id', k);  
+            para.setAttribute('class', "card-panel hoverable"); 
+
+
+        var text_vl = document.createElement("h5");        
+        var t = document.createTextNode(Map_Name);       
+        text_vl.appendChild(t);                                
+        document.getElementById(k).appendChild(text_vl);   
+
+
+        var date_vl = document.createElement("p");        
+        var t = document.createTextNode(Description_text);       
+        date_vl.appendChild(t);                                
+        document.getElementById(k).appendChild(date_vl);   
+
+
+        var botton_n = document.createElement("a");        
+        var t = document.createTextNode("Delete");       
+        botton_n.appendChild(t);
+        botton_n.setAttribute('class', "waves-effect waves-light btn red botton_n");
+        var fu_onclick = "remove('"+ k + "')";
+        botton_n.setAttribute('onclick' , fu_onclick);                                
+        document.getElementById(k).appendChild(botton_n);
+
+
+        var botton_nn = document.createElement("a");        
+        var t = document.createTextNode("Edit");       
+        botton_nn.appendChild(t);
+        botton_nn.setAttribute('class', "waves-effect waves-light btn modal-trigger btn botton_n_2");
+        var fu_onclick = "edit_Id('"+k+"' , '"+Map_Name+"') ";
+        botton_nn.setAttribute('onclick' , fu_onclick); 
+        botton_nn.setAttribute('href' , '#modal2');                               
+        document.getElementById(k).appendChild(botton_nn);
+
+
+
+        var botton_nnn = document.createElement("a");        
+        var t = document.createTextNode("Show Map");       
+        botton_nnn.appendChild(t);
+        botton_nnn.setAttribute('class', "waves-effect waves-light btn modal-trigger blue botton_n_2");
+        
+        var fu_onclick = " show_Map("+lat+" , "+lng+") ";
+        botton_nnn.setAttribute('onclick' , fu_onclick);
+         botton_nnn.setAttribute('href' , '#modal1');                               
+        document.getElementById(k).appendChild(botton_nnn);
+
+
+
+
+
+         
+        }
+    }
+
+
+
+
+
+
+
+
+
+    function errData(err){
+        console.log('Error!');  
+        console.log(err);   
+    }
+
+
+
+}
+
+
+
+function show_Map(lat ,lng) {
+
+  var lat_lng = {lat: lat, lng: lng};  
+console.log(lat_lng);
+
+   addMarker(lat_lng); 
+
+    Startzoom(lat,lng);
+
+}
+
+
+
+function remove(key) {
+
+   var MyPath = firebase.database().ref("Maps/" );
+MyPath.child(key).remove().then(function() {
+    console.log("Delete succeeded.");
+    // alert("");
+      Materialize.toast('Delete succeeded. ' , 3000);
+  })
+  .catch(function(error) {
+    console.log("Remove failed: " + error.message)
+  });
+
+}
+
+var keyEdit ='';
+function edit_Id(key ,text) {
+
+keyEdit = key;
+
+}
+
+
+function chlickIdit() {
+
+var d = new Date();
+var textDate = d.toDateString();
+
+var Map_Name = $('#Map_Name').val();
+var Description_text = $('#Description_text').val();
+var valueSelected2 = valueSelected;
+
+var user = firebase.auth().currentUser;
+ var uid = user.uid;
+
+var maps2 = markers[markers.length - 1] ;
+
+var lat = maps2.position.lat();
+
+var lng = maps2.position.lng();
+
+  var data = { Map_Name: Map_Name , Date: textDate , Description_text: Description_text ,
+    Filter: valueSelected , lat:  lat , lng: lng};
+
+var MyPath = firebase.database().ref("Maps/" + keyEdit + "/");
+
+MyPath.update(data).then(function() {
+    console.log(' succeeded');
+    $('#modal2').modal('close');
+     Materialize.toast('Change to : ' + text, 3000);
+      
+
+
+  })
+  .catch(function(error) {
+    console.log(' failed' + error.message);
+  });
+}
+
+
+
+
+ $(document).ready(function(){
+    // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+    $('.modal').modal();
+
+    });
+
+
+
+
+
+var valueSelected ;
+
+$('#mySelect').on('change', function() {
+        console.log($(this).val());
+
+valueSelected = $(this).val();
+
+    });
+
+
+
+
+ Start23();
+
+
+function Start23() {
+
+   
+    var scores;
+
+    var ref_v = firebase.database().ref("Filter/");
+
+    ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
+
+   function errData(err){
+        console.log('Error!');  
+        console.log(err);   
+    }
+
+    function getData(data){
+         scores = data.val();
+        var keys = Object.keys(scores);
+        console.log(keys);
+
+
+        var myNode = document.getElementById("mySelect");
+        myNode.innerHTML = '';
+
+
+
+
+        for (var i = 0; i < keys.length; i++) {
+            var k =keys[i];
+
+      
+            var filter_Name = scores[k].filter_Name;
+         
+        //  <option value = "1">Mango</option>
+        
+
+        var para = document.createElement("option");
+        var t22 = document.createTextNode(filter_Name);
+        para.appendChild(t22); 
+        document.getElementById("mySelect").appendChild(para);
+            
+            para.setAttribute('value', filter_Name);  
+       
+
+
+        
+
+
+
+}
+
+ $('select').material_select();
+}}
+
+
+
+
+
+
+
+
+
+    function errData(err){
+        console.log('Error!');  
+        console.log(err);   
+    }
+
+
+     function Start22() {
+        var ref_v22 = firebase.database().ref("Users/" + User_ID + "/");
+   ref_v22.once('value')
+  .then(function(GetData) {
+
+    var Data = GetData.val();
+      name_user = Data.first_name + " " + Data.last_name ;
+       $('#nameUser').text("Hello " + name_user + "  ")
+
+     });
+
+
+
+        }
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+  
+window.User_ID = user.uid ;
+Start22();
+Start();
+    
+  } else {
+     window.location.assign('sign_in.html');
+  }
+});
+</script>
+
+
+
+
+     
+    <script>
+
+
+
+
+
+
+var map,map2;  
+var markers = [];  
+
+function initMap() {  
+  var lat_lng = {lat: 32.5371424, lng: 35.857029};  
+
+
+  map = new google.maps.Map(document.getElementById('map'), {  
+    zoom: 15,  
+    center: lat_lng,  
+    mapTypeId: google.maps.MapTypeId.TERRAIN  
+  }); 
+
+
+  map2 = new google.maps.Map(document.getElementById('map2'), {  
+    zoom: 15,  
+    center: lat_lng,  
+    mapTypeId: google.maps.MapTypeId.TERRAIN  
+  }); 
+
+
+  
+// start 
+
+
+ var searchBox = new google.maps.places.SearchBox(document.getElementById('pac-input'));
+   map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('pac-input'));
+   google.maps.event.addListener(searchBox, 'places_changed', function() {
+     searchBox.set('map', null);
+
+
+     var places = searchBox.getPlaces();
+
+     var bounds = new google.maps.LatLngBounds();
+     var i, place;
+     for (i = 0; place = places[i]; i++) {
+       (function(place) {
+         var marker = new google.maps.Marker({
+
+           position: place.geometry.location
+         });
+         marker.bindTo('map', searchBox, 'map');
+         google.maps.event.addListener(marker, 'map_changed', function() {
+           if (!this.getMap()) {
+             this.unbindAll();
+           }
+         });
+         bounds.extend(place.geometry.location);
+
+
+       }(place));
+
+     }
+     map.fitBounds(bounds);
+     searchBox.set('map', map);
+     map.setZoom(Math.min(map.getZoom(),12));
+
+   });
+
+
+   // end
+  
+  // This event listener will call addMarker() when the map is clicked.  
+  map.addListener('click', function(event) {  
+    addMarker(event.latLng);  
+  });  
+  
+  // Adds a marker at the center of the map.  
+   
+}  
+  
+// Adds a marker to the map and push to the array.  
+function addMarker(location) {  
+  var marker = new google.maps.Marker({  
+    position: location,  
+    map: map2 
+  });  
+  markers.push(marker);  
+}  
+ function Startzoom(lat,lng) {
+
+   
+map2.setZoom(16);
+    map2.setCenter({lat:lat, lng:lng});
+}
+
+
+
+
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvT88iN5tkE_Q3-qlVqIIa5RJCQrdgznY&libraries=places&callback=initMap"
+        async defer></script>
+
+
+</html>
