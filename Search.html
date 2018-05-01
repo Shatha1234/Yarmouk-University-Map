@@ -45,7 +45,14 @@
 
 
  <div class="container">
-
+    <div class="row" style=" margin-top: 77px; ">
+        <div class="input-field col s12">
+          <input  id="Map_Search" type="text" class="validate">
+          <label for=" ">Map Name</label>
+        </div>
+    
+      </div>
+     <a class="waves-effect waves-light btn" onclick="Search_Now()"><i class="fa fa-search" aria-hidden="true"></i>Search</a>
 <div class="row" style="padding-top: 60px">
  
   <ul id="nlist">
@@ -149,14 +156,7 @@
 
 <script type="text/javascript">
 
-  function Sign_out() {
-    firebase.auth().signOut().then(function() {
-  window.location.assign('sign_in.html');
-}, function(error) {
-  console.log(' An error happened.' , error);
-   alert (error);
-});
-  }
+
   
   var keys;
 var User_ID;
@@ -168,203 +168,12 @@ Start();
 
 
 
-// Section Category
-
-function Start() {
-
-       var scores;
-
-    var ref_v = firebase.database().ref("Category/");
-
-    ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
-
-   function errData(err){
-        console.log('Error!');  
-        console.log(err);   
-    }
-
-    function getData(data){
-         scores = data.val();
-        var keys = Object.keys(scores);
-        console.log(keys);
-
-
-        var myNode = document.getElementById("nlist");
-        myNode.innerHTML = '';
-
-
-
-
-        for (var i = 0; i < keys.length; i++) {
-            var k =keys[i];
-
-                console.log(Category_Name);
-            var Category_Name = scores[k].Category_Name;
-              var Description = scores[k].Description;
-                var ImgUrl = scores[k].ImgUrl;
-         
-        //  <option value = "1">Mango</option>
-        
-
-  
-       console.log(Category_Name);
-        console.log(ImgUrl);
-        console.log(k);
-        
-
-        var para = document.createElement("li");
-        var t22 = document.createTextNode(" ");
-        para.appendChild(t22); 
-        document.getElementById("nlist").appendChild(para);
-            
-            para.setAttribute('id', k);  
-            para.setAttribute('class', "card-panel hoverable"); 
-
-  var text_vl = document.createElement("img");        
-        var t = document.createTextNode(""); 
-         text_vl.setAttribute('src' , ImgUrl);        
-         text_vl.setAttribute('style' , "width: 100%; ");  
-        text_vl.appendChild(t);                                
-        document.getElementById(k).appendChild(text_vl);   
-
-
-        var text_vl = document.createElement("h5");        
-        var t = document.createTextNode(Category_Name);       
-        text_vl.appendChild(t);                                
-        document.getElementById(k).appendChild(text_vl);   
-
-
-        var date_vl = document.createElement("p");        
-        var t = document.createTextNode(Description);       
-        date_vl.appendChild(t);                                
-        document.getElementById(k).appendChild(date_vl);   
-
-
-        var botton_nnn = document.createElement("a");        
-        var t = document.createTextNode("Show Section");       
-        botton_nnn.appendChild(t);
-        botton_nnn.setAttribute('class', "waves-effect waves-light btn modal-trigger blue botton_n_2");
-        
-        var fu_onclick = "Start_Section('"+Category_Name+"') ";
-        botton_nnn.setAttribute('onclick' , fu_onclick);
-                                      
-        document.getElementById(k).appendChild(botton_nnn);
-
-
-        
-
-
-
-}}
-
-
-}
-
-
-
-// Section
-
-function Start_Section(var_Category) {
-
-          var scores;
-
-    var ref_v = firebase.database().ref("Section/");
-
-    ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
-
-   function errData(err){
-        console.log('Error!');  
-        console.log(err);   
-    }
-
-    function getData(data){
-         scores = data.val();
-        var keys = Object.keys(scores);
-        console.log(keys);
-
-
-        var myNode = document.getElementById("nlist");
-        myNode.innerHTML = '';
-
-
-
-
-        for (var i = 0; i < keys.length; i++) {
-            var k =keys[i];
-
-                console.log(Category_Name);
-            var Category_Name = scores[k].Category_Name;
-            var Section_Name = scores[k].Section_Name;
-              var Description = scores[k].Description;
-                var ImgUrl = scores[k].ImgUrl;
-         
-        //  <option value = "1">Mango</option>
-        
-
-  
-       console.log(Category_Name);
-        console.log(ImgUrl);
-        console.log(k);
-        
-  if (var_Category == Category_Name) {
-        var para = document.createElement("li");
-        var t22 = document.createTextNode(" ");
-        para.appendChild(t22); 
-        document.getElementById("nlist").appendChild(para);
-            
-            para.setAttribute('id', k);  
-            para.setAttribute('class', "card-panel hoverable"); 
-
-  var text_vl = document.createElement("img");        
-        var t = document.createTextNode(""); 
-         text_vl.setAttribute('src' , ImgUrl);    
-          text_vl.setAttribute('style' , "width: 100%; ");   
-            // style=" width: 100%; "
-        text_vl.appendChild(t);                                
-        document.getElementById(k).appendChild(text_vl);   
-
-
-        var text_vl = document.createElement("h5");        
-        var t = document.createTextNode(Section_Name);       
-        text_vl.appendChild(t);                                
-        document.getElementById(k).appendChild(text_vl);   
-
-
-        var date_vl = document.createElement("p");        
-        var t = document.createTextNode(Description);       
-        date_vl.appendChild(t);                                
-        document.getElementById(k).appendChild(date_vl);   
-
-
-        var botton_nnn = document.createElement("a");        
-        var t = document.createTextNode("Show Maps");       
-        botton_nnn.appendChild(t);
-        botton_nnn.setAttribute('class', "waves-effect waves-light btn modal-trigger blue botton_n_2");
-        
-        var fu_onclick = "Start_Map('"+Section_Name+"') ";
-        botton_nnn.setAttribute('onclick' , fu_onclick);
-                                      
-        document.getElementById(k).appendChild(botton_nnn);
-
-}
-        
-
-
-
-}}
-
-
-}
-
-
-
-
 
 // Map
 
-function Start_Map(var_Section) {
+function Search_Now() {
 
-   
+   var var_Section = $('#Map_Search').val();
     var ref_v = firebase.database().ref("Maps/" );
 
     ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
@@ -396,7 +205,14 @@ function Start_Map(var_Section) {
         console.log(Map_Name);
         console.log(Description_text);
         console.log(k);
-        if (var_Section == Section) {
+
+
+   
+    var n = Map_Name.includes(var_Section);
+
+console.log(n);
+
+        if (n) {
 
         var para = document.createElement("li");
         var t22 = document.createTextNode(" ");
@@ -575,22 +391,6 @@ valueSelected = $(this).val();
 
 
 
-
-
-     function Start22() {
-        var ref_v22 = firebase.database().ref("Users/" + User_ID + "/");
-   ref_v22.once('value')
-  .then(function(GetData) {
-
-    var Data = GetData.val();
-      name_user = Data.first_name + " " + Data.last_name ;
-       $('#nameUser').text("Hello " + name_user + "  ")
-
-     });
-
-
-
-        }
 
 
 </script>

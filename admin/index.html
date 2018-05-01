@@ -33,7 +33,8 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
           <li class="active"><a href="#"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Map</a></li>
-            <li ><a href="Add filter.html"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add filter</a></li>
+             <li ><a href="Add Category.html"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Category</a></li>
+            <li ><a href="Add Section.html"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Section</a></li>
             <li><a href="list.html"><i class="fa fa-list" aria-hidden="true"></i> List Maps</a></li>
               <li><a href="Maps_Proposal.html"><i class="fa fa-list" aria-hidden="true"></i> Maps_Proposal</a></li>
             <li><a href="Account.html"><i class="fa fa-user" aria-hidden="true"></i> Account</a></li>
@@ -76,10 +77,26 @@
       <option value="2">Option 2</option>
       <option value="3">Option 3</option>
     </select>
-    <label>Fillter Select</label>
+    <label>Category Select</label>
   </div>  </div>
+        <div class="row">
+        <div class="input-field col s12">
+    <select id="mySelect2">
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </select>
+    <label>Section Select</label>
+  </div>  </div>
+    <div class="row">
+      <img id="myImage" src="#">
+     </div>
+    <div class="row">
+      <input type="file" id="myFile" name="file"/>
+     <span id="linkbox"></span>
 
-
+     </div>
        <div class="row">
 <div id="map" style="height: 300px; "></div>
  <div class="form-group">
@@ -112,6 +129,17 @@ $('#mySelect').on('change', function() {
         console.log($(this).val());
 
 valueSelected = $(this).val();
+
+    });
+
+
+
+var valueSelected2 ;
+
+$('#mySelect2').on('change', function() {
+        console.log($(this).val());
+
+valueSelected2 = $(this).val();
 
     });
 
@@ -173,7 +201,8 @@ var textDate = d.toDateString();
 
 var Map_Name = $('#Map_Name').val();
 var Description_text = $('#Description_text').val();
-var valueSelected2 = valueSelected;
+var valueSelected21 = valueSelected;
+var valueSelected22 = valueSelected2;
 
 var user = firebase.auth().currentUser;
  var uid = user.uid;
@@ -185,7 +214,7 @@ var lat = maps2.position.lat();
 var lng = maps2.position.lng();
 
   var data = { Map_Name: Map_Name , Date: textDate , Description_text: Description_text ,
-    Filter: valueSelected , userID: uid  , lat:  lat , lng: lng};
+    Category: valueSelected21 ,  Section: valueSelected22 ,ImgUrl:url, userID: uid  , lat:  lat , lng: lng};
 var MyPath = firebase.database().ref( 'Maps/');
 MyPath.push(data)
   .then(function() {
@@ -207,6 +236,34 @@ MyPath.push(data)
 
 
 
+var url;
+
+     var storageRef = firebase.storage().ref();
+
+    function handleFileSelect(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      var file = evt.target.files[0];
+      var metadata = {
+        'contentType': file.type
+      };
+      
+      storageRef.child('images/' + file.name).put(file, metadata).then(function(snapshot) {
+        console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+        console.log(snapshot.metadata);
+         url = snapshot.metadata.downloadURLs[0];
+        console.log('File available at', url);
+        document.getElementById("myImage").src = url;
+        
+      }).catch(function(error) {
+        console.error('Upload failed:', error);
+      });
+
+    }
+
+
+    document.getElementById('myFile').addEventListener('change', handleFileSelect, false);
+
 
 
 
@@ -217,13 +274,13 @@ MyPath.push(data)
 
  Start();
 
-
+ Start21();
 function Start() {
 
    
     var scores;
 
-    var ref_v = firebase.database().ref("Filter/");
+    var ref_v = firebase.database().ref("Category/");
 
     ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
 
@@ -247,18 +304,18 @@ function Start() {
         for (var i = 0; i < keys.length; i++) {
             var k =keys[i];
 
-      
-            var filter_Name = scores[k].filter_Name;
+                console.log(Category_Name);
+            var Category_Name = scores[k].Category_Name;
          
         //  <option value = "1">Mango</option>
         
 
         var para = document.createElement("option");
-        var t22 = document.createTextNode(filter_Name);
+        var t22 = document.createTextNode(Category_Name);
         para.appendChild(t22); 
         document.getElementById("mySelect").appendChild(para);
             
-            para.setAttribute('value', filter_Name);  
+            para.setAttribute('value', Category_Name);  
        
 
 
@@ -266,10 +323,65 @@ function Start() {
 
 
 
-}
+}}}
 
- $('select').material_select();
-}}
+
+
+function Start21() {
+
+   
+    var scores;
+
+    var ref_v = firebase.database().ref("Section/");
+
+    ref_v.limitToFirst(20).orderByKey().on('value', getData, errData);
+
+   function errData(err){
+        console.log('Error!');  
+        console.log(err);   
+    }
+
+    function getData(data){
+         scores = data.val();
+        var keys = Object.keys(scores);
+        console.log(keys);
+
+
+        var myNode = document.getElementById("mySelect2");
+        myNode.innerHTML = '';
+
+
+
+
+        for (var i = 0; i < keys.length; i++) {
+            var k =keys[i];
+
+      
+            var Section_Name = scores[k].Section_Name;
+          console.log(Section_Name);
+        //  <option value = "1">Mango</option>
+        
+
+        var para = document.createElement("option");
+        var t22 = document.createTextNode(Section_Name);
+        para.appendChild(t22); 
+        document.getElementById("mySelect2").appendChild(para);
+            
+            para.setAttribute('value', Section_Name);  
+       
+    $('select').material_select();
+
+        
+
+
+
+}}}
+
+
+
+
+
+
 
 
 
@@ -291,6 +403,13 @@ function Start() {
 
        
     <script>
+
+      $( document ).ready(function() {
+    console.log( "ready!" );
+    
+});
+
+
 
 var map;  
 var markers = [];  
